@@ -42,7 +42,9 @@ mcmc.out <- runMCMC(cBuilt,
                     nchains = 2,
                     nburnin = 1000)
 
+saveRDS(mcmc.out, "samples/mcmc.out_h1.rds")
+
 mcmc.out$WAIC
 mcmc.out$summary
 plot(mcmc.out$samples)
-WAIC <- mcmc.out$WAIC$WAIC
+WAIC_nimble_h1 <- mcmc.out$WAIC$WAIC

@@ -1,8 +1,16 @@
+## load data
+load("Sim_Data.RData")
+mcmc.out <- readRDS("samples/mcmc.out_h1.rds")
+mcmc_samples <- as.matrix(mcmc.out$samples)
+mcmc_samples <- mcmc_samples[1:1000,]
+
+
 waic <- function(x, y, postSamples) {
   
   log.like <- function(x, y, beta0, beta1, sigma) {
     mu <- beta0 + beta1 * x
-    -sum((y - mu)^2) / (2 * sigma^2) - length(y) * log(sigma) - 0.5 * length(y) * log(2 * pi * sigma^2)
+    ll <- dnorm(y, mu, sigma, log = TRUE)
+    return(ll)
   }
   
   ## calculate likelihoods in parallel
@@ -14,7 +22,7 @@ waic <- function(x, y, postSamples) {
                 }, x = x, y = y, mc.cores = 8)
   ## create matrix of likelihoods (columns = individuals, rows = samples)
   l <- reduce(l, base::rbind)
-  
+ 
   ## now deal with first half of the equation - mean of the likelihood for each individual observation across the samples
   lppd <- apply(l, 2, log_sum_exp_marg, mn = TRUE)
   lppd <- sum(lppd)  
@@ -30,4 +38,4 @@ waic <- function(x, y, postSamples) {
   return(waic)
 }
 
-waic <- waic(x, y, mcmc_samples)
+WAIC_naive_h1 <- waic(x, y, mcmc_samples)

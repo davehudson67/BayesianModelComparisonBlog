@@ -8,7 +8,7 @@ code <- nimbleCode({
   }
   
   ## priors
-  beta0 ~ dnorm(0, 0.001)
+  beta0 ~ dnorm(0, sd = 1)
   sigma ~ dunif(0, 100)
   
 })
@@ -26,13 +26,12 @@ config <- configureMCMC(cmodel, monitors = c("beta0", "sigma"), thin = 1, enable
 config$removeSamplers(c("beta0"))
 config$addSampler(target = c("beta0"), type = "slice")
 
-
 built <- buildMCMC(config)
 
 cBuilt <- compileNimble(built)
 
 mcmc.out <- runMCMC(cBuilt,
-                    niter = 100000,
+                    niter = 10000,
                     summary = TRUE,
                     WAIC = TRUE,
                     samplesAsCodaMCMC = TRUE,
@@ -40,7 +39,9 @@ mcmc.out <- runMCMC(cBuilt,
                     nchains = 2,
                     nburnin = 1000)
 
+saveRDS(mcmc.out, "samples/mcmc.out_h0.rds")
+
 mcmc.out$WAIC
 mcmc.out$summary
 plot(mcmc.out$samples)
-WAIC <- mcmc.out$WAIC$WAIC
+WAIC_nimble_h0 <- mcmc.out$WAIC$WAIC

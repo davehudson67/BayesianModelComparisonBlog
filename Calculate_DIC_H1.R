@@ -1,5 +1,5 @@
 # load MCMC samples for the model parameters
-library(coda)
+mcmc.out <- readRDS("samples/mcmc.out_h1.rds")
 
 mcmc_samples <- as.matrix(mcmc.out$samples)
 
@@ -25,5 +25,5 @@ deviance_int <- post_mean_deviance - deviances
 p_D <- sum(deviance_int)
 
 # calculate the DIC
-DIC <- post_mean_deviance + p_D
+DIC_h1 <- post_mean_deviance + p_D
 
